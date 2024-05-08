@@ -25,5 +25,7 @@ router.register("mymeeting",views.MyMeetingsView,basename="mymeeting")
 urlpatterns = [
     path("register/",views.HrCreateView.as_view(),name="signup"),
     path('token/',views.CustomAuthToken.as_view(), name='token'),
-    path("performancetrack/",views.PerformanceTrackView.as_view(),name="performancetrack")
+    path("performancetrack/",views.PerformanceTrackView.as_view(),name="performancetrack"),
+    path("profile/",views.profileView.as_view(),name="profile"),
+
 ] +router.urls

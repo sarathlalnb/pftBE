@@ -13,6 +13,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return Hr.objects.create_user(**validated_data)
     
+    
+class ProfileEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Hr
+        fields=["name","email_address","phoneno"]
+            
+    
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model=Employee

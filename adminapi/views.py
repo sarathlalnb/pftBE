@@ -145,3 +145,6 @@ class MeetingView(ViewSet):
         except Employee.DoesNotExist:
             return Response({"msg": "Meeting not found"}, status=status.HTTP_404_NOT_FOUND)
         
+
+
+        

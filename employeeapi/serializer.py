@@ -12,6 +12,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Employee.objects.create_user(**validated_data)
+    
+    
+class ProfileEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Employee
+        fields=["Firstname","lastname","email_address","phoneno","position"]
 
 
 class EmployeeSerializer(serializers.ModelSerializer):

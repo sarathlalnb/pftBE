@@ -243,3 +243,29 @@ class MyMeetingsView(ViewSet):
         qs=Meeting.objects.get(id=id)
         serializer=MeetingListSerializer(qs)
         return Response(data=serializer.data)
+    
+    
+class profileView(APIView):
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+    
+    def get(self,request,*args,**kwargs):
+        emp_id=request.user.id
+        qs=Employee.objects.get(id=emp_id)
+        serializer=RegistrationSerializer(qs)
+        return Response(serializer.data)
+    
+    
+    def put(self, request, *args, **kwargs): 
+        emp_id = request.user.id
+        try:
+            emp = Employee.objects.get(id=emp_id)
+        except Employee.DoesNotExist:
+            return Response({"error": "Employee does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ProfileEditSerializer(instance=emp, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

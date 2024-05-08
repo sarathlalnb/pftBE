@@ -12,7 +12,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return TeamLead.objects.create_user(**validated_data)
-    
+
+
+class ProfileEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=TeamLead
+        fields=["name","email_address","phoneno"]    
 
         
 class ProjectSerializer(serializers.ModelSerializer):

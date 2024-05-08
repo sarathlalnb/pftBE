@@ -315,7 +315,30 @@ class MyMeetingsView(ViewSet):
         return Response(data=serializer.data)
           
 
-  
+class profileView(APIView):
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+    
+    def get(self,request,*args,**kwargs):
+        TeamLead_id=request.user.id
+        qs=TeamLead.objects.get(id=TeamLead_id)
+        serializer=RegistrationSerializer(qs)
+        return Response(serializer.data)
+    
+    def put(self, request, *args, **kwargs): 
+        teamlead_id = request.user.id
+        try:
+            teamlead = TeamLead.objects.get(id=teamlead_id)
+        except TeamLead.DoesNotExist:
+            return Response({"error": "TeamLead does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ProfileEditSerializer(instance=teamlead, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+          
 
     
      
