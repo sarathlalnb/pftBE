@@ -1,0 +1,112 @@
+from rest_framework import serializers
+from hrapi.models import Hr,Teams,TeamLead,TaskUpdateChart,TaskChart,Employee,Projects,ProjectDetail,Project_assign,Performance_assign,ProjectUpdates,Meeting
+
+
+class RegistrationSerializer(serializers.ModelSerializer):
+    id=serializers.CharField(read_only=True)
+    password=serializers.CharField(write_only=True)
+
+    class Meta:
+        model=Hr
+        fields=["id","name","username","email_address","password","phoneno"]
+
+    def create(self, validated_data):
+        return Hr.objects.create_user(**validated_data)
+    
+class EmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Employee
+        fields=["id","Firstname","lastname","email_address","phoneno","position","user_type","in_team"]
+        
+
+class TeamleadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=TeamLead
+        fields=["id","name","email_address","phoneno","user_type"]
+        
+
+class TeamsSerializer(serializers.ModelSerializer):
+    teamlead=serializers.CharField(source='teamlead.name', read_only=True)
+    members=serializers.SerializerMethodField()
+
+    def get_members(self, obj):
+        return [member.employee.Firstname for member in obj.members.all()]
+    
+    class Meta:
+        model=Teams
+        fields="__all__"
+        
+        
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Projects
+        fields="__all__"
+        
+        
+class ProjectUpdatesSerializer(serializers.ModelSerializer):
+    project=serializers.CharField(read_only=True)
+    class Meta:
+        model=ProjectUpdates
+        fields="__all__"
+
+
+class ProjectAssignSerializer(serializers.ModelSerializer):
+    teamlead=serializers.CharField(source='teamlead.name', read_only=True)
+    project=serializers.CharField(source='project.topic', read_only=True)
+    team=serializers.CharField(source='team.name', read_only=True)
+    class Meta:
+        model=Project_assign
+        fields="__all__"
+ 
+ 
+class ProjectDetailSerializer(serializers.ModelSerializer):
+    projectassigned=serializers.CharField(source='projectassigned.topic', read_only=True)
+    teamlead=serializers.CharField(source='teamlead.name', read_only=True)
+    assigned_person=serializers.CharField(source='assigned_person.Firstname', read_only=True)
+    class Meta:
+        model=ProjectDetail
+        fields="__all__"
+        
+        
+class TaskChartSerializer(serializers.ModelSerializer):
+    project_detail=ProjectDetailSerializer()
+    assigned_person=serializers.CharField(source='assigned_person.Firstname', read_only=True)
+    project_name=serializers.CharField(source='project_detail.projectassigned.project', read_only=True)  #new field for project name
+    class Meta:
+        model=TaskChart
+        fields="__all__"
+        
+
+class TaskUpdatesChartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=TaskUpdateChart
+        exclude=('task','updated_by')
+    
+    
+class PerformanceTrackSerializer(serializers.ModelSerializer):
+    hr=serializers.CharField(read_only=True)
+    performance=serializers.CharField(read_only=True)
+    class Meta:
+        model=Performance_assign
+        fields="__all__"
+        
+        
+class PerformanceTrackViewSerializer(serializers.ModelSerializer):
+    hr=serializers.CharField(read_only=True)
+    employee=serializers.CharField(source='employee.Firstname', read_only=True)
+    class Meta:
+        model=Performance_assign
+        fields="__all__"
+        
+
+class MeetingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Meeting
+        fields=["description","member"]
+        
+
+class MeetingListSerializer(serializers.ModelSerializer):
+    member=serializers.CharField(read_only=True)
+    class Meta:
+        model=Meeting
+        fields="__all__"
