@@ -31,13 +31,17 @@ class CustomAuthToken(ObtainAuthToken):
         serializer = self.serializer_class(data=request.data,context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        user_type = user.user_type
-        
-        return Response({
-            'token': token.key,
-            'user_type': user_type,
-        }) 
+        user_obj=TeamLead.objects.get(id=user.id)
+        user_approved=user_obj.is_adminapproved
+        if user_approved:
+            token, created = Token.objects.get_or_create(user=user)
+            user_type = user.user_type
+            return Response({
+                'token': token.key,
+                'user_type': user_type,
+            })
+        else:
+            return Response(data={"msg": "You are not approved by admin"}, status=status.HTTP_403_FORBIDDEN)
  
         
     
