@@ -1,0 +1,13 @@
+admin
+
+login
+approval for login
+crud for employees,hr,teamlead
+create meeting
+
+
+hr
+
+reg
+login
+list and retrieve teamleads,employees
