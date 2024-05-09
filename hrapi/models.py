@@ -132,6 +132,21 @@ class Meeting(models.Model):
     posted_at=models.DateTimeField(auto_now_add=True)
     
     
+class DailyTask(models.Model):
+    teamlead=models.ForeignKey(TeamLead,on_delete=models.CASCADE)    
+    task=models.CharField(max_length=100)
+    emp=models.ForeignKey(Employee, on_delete=models.CASCADE)
+    is_completed=models.BooleanField(default=False)
+    
+class Rating(models.Model):
+    teamlead=models.ForeignKey(TeamLead,on_delete=models.CASCADE)    
+    emp=models.ForeignKey(Employee, on_delete=models.CASCADE)
+    rating=models.PositiveIntegerField(validators=[MinValueValidator(1),MaxValueValidator(5)])
+    comment=models.CharField(max_length=100)
 
- 
+   
+class TechnologiesList(models.Model):
+    no=models.PositiveIntegerField()
+    data=models.CharField(max_length=100)
+
 

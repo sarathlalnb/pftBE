@@ -11,7 +11,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 
 
-from hrapi.models import Hr,Teams,TeamLead,TaskUpdateChart,TaskChart,Employee,Projects,ProjectDetail,Project_assign,Performance_assign,ProjectUpdates,Meeting
+from hrapi.models import *
 from adminapi.serializer import *
 
 class CustomAuthToken(ObtainAuthToken):
@@ -147,4 +147,38 @@ class MeetingView(ViewSet):
         
 
 
+class TechnologiesView(ViewSet):
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+    
+    def create(self,request,*args,**kwargs):
+        serializer=TechnologiesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data)
+        else:
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def list(self,request,*args,**kwargs):
+        qs=TechnologiesList.objects.all()
+        serializer=TechnologiesSerializer(qs,many=True)
+        return Response(data=serializer.data)
+    
+    def retrieve(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        qs=TechnologiesList.objects.get(id=id)
+        serializer=TechnologiesSerializer(qs)
+        return Response(data=serializer.data)
+    
+    def destroy(self, request, *args, **kwargs):
+        id = kwargs.get("pk")
+        try:
+            instance =TechnologiesList.objects.get(id=id)
+            instance.delete()
+            return Response({"msg": "TechnologiesList removed"})
+        except Employee.DoesNotExist:
+            return Response({"msg": "TechnologiesList not found"}, status=status.HTTP_404_NOT_FOUND)
         
+
+
+              

@@ -15,7 +15,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 
 
-from hrapi.models import Hr,Teams,TeamLead,TaskUpdateChart,TaskChart,Employee,Projects,ProjectDetail,Project_assign,Performance_assign,ProjectUpdates,Meeting
+from hrapi.models import *
 from employeeapi.serializer import *
 
 
@@ -269,3 +269,60 @@ class profileView(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+
+class TechnologiesView(ViewSet):
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+
+    
+    def list(self,request,*args,**kwargs):
+        qs=TechnologiesList.objects.all()
+        serializer=TechnologiesSerializer(qs,many=True)
+        return Response(data=serializer.data)
+    
+    def retrieve(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        qs=TechnologiesList.objects.get(id=id)
+        serializer=TechnologiesSerializer(qs)
+        return Response(data=serializer.data)
+        
+
+
+class MyRatingView(ViewSet):
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+    
+    def list(self,request,*args,**kwargs):
+        emp_id=request.user.id
+        qs=Rating.objects.filter(emp=emp_id)
+        serializer=RatingSerializer(qs,many=True)
+        return Response(serializer.data)  
+    
+    
+class DailyTaskView(ViewSet):
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+    
+    def list(self,request,*args,**kwargs):
+        emp_id=request.user.id
+        emp_obj=Employee.objects.get(id=emp_id)
+        qs=DailyTask.objects.filter(emp=emp_obj,is_completed=False)
+        serializer=DailyTaskSerializer(qs,many=True)
+        return Response(data=serializer.data)
+    
+    def retrieve(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        qs=DailyTask.objects.get(id=id)
+        serializer=DailyTaskSerializer(qs)
+        return Response(data=serializer.data)  
+    
+    @action(detail=True, methods=["post"])
+    def mark_completed(self, request, *args, **kwargs):
+        id = kwargs.get("pk")
+        qs=DailyTask.objects.get(id=id)
+        qs.is_completed= True
+        qs.save()
+        serializer = DailyTaskSerializer(qs)
+        return Response(serializer.data)     

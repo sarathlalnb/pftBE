@@ -13,6 +13,8 @@ router.register("projectdetail",views.ProjectDetailView,basename="projectdetail"
 router.register("taskchart",views.TaskChartView,basename="taskchart")
 router.register("meeting",views.MeetingView,basename="meeting")
 router.register("mymeeting",views.MyMeetingsView,basename="mymeeting")
+router.register("dailytask",views.DailyTaskView,basename="dailytask")
+
 
 
 

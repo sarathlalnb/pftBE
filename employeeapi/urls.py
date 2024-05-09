@@ -10,6 +10,11 @@ router.register("assignedprojects",views.AssignedProjectsView,basename="assigned
 router.register("taskchart",views.TaskChartView,basename="taskchart")
 router.register("taskupdateschart",views.TaskUpdatesView,basename="taskupdateschart")
 router.register("mymeeting",views.MyMeetingsView,basename="mymeeting")
+router.register("technology",views.TechnologiesView,basename="tech")
+router.register("myrating",views.MyRatingView,basename="rating")
+router.register("dailytask",views.DailyTaskView,basename="dailytask")
+
+
 
 
 urlpatterns = [
@@ -17,6 +22,7 @@ urlpatterns = [
     path('token/',views.CustomAuthToken.as_view(), name='token'),
     path("teamview/",views.TeamView.as_view(),name="teamview"),
     path("profile/",views.profileView.as_view(),name="profile"),
+
 
     
     

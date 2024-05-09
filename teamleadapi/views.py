@@ -12,7 +12,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 
 
-from hrapi.models import Hr,Teams,TeamLead,TaskUpdateChart,TaskChart,Employee,Projects,ProjectDetail,Project_assign,Performance_assign,Meeting
+from hrapi.models import *
 from teamleadapi.serializer import *
 
 
@@ -61,6 +61,61 @@ class EmployeesView(ViewSet):
         qs=Employee.objects.get(id=id)
         serializer=EmployeeSerializer(qs)
         return Response(data=serializer.data)
+    
+    
+    @action(detail=True, methods=["post"])
+    def rate_emp(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        tl_id = request.user.id
+        tl_obj = TeamLead.objects.get(id=tl_id)
+        qs=Employee.objects.get(id=id)
+        serializer=RatingSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(emp=qs,teamlead=tl_obj)
+            return Response(data=serializer.data)
+        else:
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+    @action(detail=True, methods=["post"])
+    def add_task(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        tl_id = request.user.id
+        tl_obj = TeamLead.objects.get(id=tl_id)
+        qs=Employee.objects.get(id=id)
+        serializer=DailyTaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(emp=qs,teamlead=tl_obj)
+            return Response(data=serializer.data)
+        else:
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+class DailyTaskView(ViewSet):
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+    
+    def list(self,request,*args,**kwargs):
+        qs=DailyTask.objects.all()
+        serializer=DailyTaskSerializer(qs,many=True)
+        return Response(data=serializer.data)
+    
+    def retrieve(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        qs=DailyTask.objects.get(id=id)
+        serializer=DailyTaskSerializer(qs)
+        return Response(data=serializer.data)
+    
+    def destroy(self, request, *args, **kwargs):
+        id = kwargs.get("pk")
+        try:
+            instance =DailyTask.objects.get(id=id)
+            instance.delete()
+            return Response({"msg": "Task removed"})
+        except Employee.DoesNotExist:
+            return Response({"msg": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    
     
     
 class TeamView(ViewSet):

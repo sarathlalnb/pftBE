@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from hrapi.models import Hr,Teams,TeamLead,TaskUpdateChart,TaskChart,Employee,Projects,ProjectDetail,Project_assign,Performance_assign,ProjectUpdates,Meeting
-
+from hrapi.models import *
 
 class RegistrationSerializer(serializers.ModelSerializer):
     id=serializers.CharField(read_only=True)
@@ -117,3 +116,6 @@ class MeetingListSerializer(serializers.ModelSerializer):
     class Meta:
         model=Meeting
         fields="__all__"
+        
+        
+

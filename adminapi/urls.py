@@ -9,6 +9,8 @@ router.register("hr",views.HrView,basename="hr")
 router.register("teamlead",views.TeamleadView,basename="teamlead")
 router.register("employee",views.EmployeesView,basename="employee")
 router.register("meeting",views.MeetingView,basename="meeting")
+router.register("technology",views.TechnologiesView,basename="tech")
+
 
 
 
