@@ -108,11 +108,11 @@ class PerformanceTrackViewSerializer(serializers.ModelSerializer):
 class MeetingSerializer(serializers.ModelSerializer):
     class Meta:
         model=Meeting
-        fields=["description","member"]
+        fields=["title","link","date","time"]
         
 
 class MeetingListSerializer(serializers.ModelSerializer):
-    member=serializers.CharField(read_only=True)
+    organizer=serializers.CharField(read_only=True)
     class Meta:
         model=Meeting
         fields="__all__"

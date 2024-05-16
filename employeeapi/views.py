@@ -233,8 +233,7 @@ class MyMeetingsView(ViewSet):
 
     
     def list(self,request,*args,**kwargs):
-        user_id=request.user
-        qs=Meeting.objects.filter(member=user_id)
+        qs=Meeting.objects.all()
         serializer=MeetingListSerializer(qs,many=True)
         return Response(data=serializer.data)
     

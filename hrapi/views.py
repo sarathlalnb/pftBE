@@ -332,8 +332,7 @@ class MeetingView(ViewSet):
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def list(self,request,*args,**kwargs):
-        user_id=request.user.username
-        qs=Meeting.objects.filter(organizer=user_id)
+        qs=Meeting.objects.all()
         serializer=MeetingListSerializer(qs,many=True)
         return Response(data=serializer.data)
     
@@ -354,22 +353,6 @@ class MeetingView(ViewSet):
         
         
 
-class MyMeetingsView(ViewSet):
-    authentication_classes=[authentication.TokenAuthentication]
-    permission_classes=[permissions.IsAuthenticated]
-
-    
-    def list(self,request,*args,**kwargs):
-        user_id=request.user
-        qs=Meeting.objects.filter(member=user_id)
-        serializer=MeetingListSerializer(qs,many=True)
-        return Response(data=serializer.data)
-    
-    def retrieve(self,request,*args,**kwargs):
-        id=kwargs.get("pk")
-        qs=Meeting.objects.get(id=id)
-        serializer=MeetingListSerializer(qs)
-        return Response(data=serializer.data)
     
     
 class profileView(APIView):

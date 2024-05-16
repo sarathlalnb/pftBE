@@ -91,7 +91,7 @@ class TaskUpdatesChartSerializer(serializers.ModelSerializer):
 class MeetingSerializer(serializers.ModelSerializer):
     class Meta:
         model=Meeting
-        fields=["description","member"]
+        fields=["title","link","date","time"]
         
 
 class MeetingListSerializer(serializers.ModelSerializer):

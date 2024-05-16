@@ -127,10 +127,12 @@ class Performance_assign(models.Model):
     
 class Meeting(models.Model):
     organizer=models.CharField(max_length=100)
-    member=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
-    description=models.CharField(max_length=100)
+    title=models.CharField(max_length=100)
+    link=models.CharField(max_length=100,null=True)
+    date=models.DateField(null=True)
+    time=models.TimeField(null=True)
     posted_at=models.DateTimeField(auto_now_add=True)
-    
+
     
 class DailyTask(models.Model):
     teamlead=models.ForeignKey(TeamLead,on_delete=models.CASCADE)    

@@ -125,8 +125,7 @@ class MeetingView(ViewSet):
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def list(self,request,*args,**kwargs):
-        user_id=request.user.username
-        qs=Meeting.objects.filter(organizer=user_id)
+        qs=Meeting.objects.all()
         serializer=MeetingListSerializer(qs,many=True)
         return Response(data=serializer.data)
     
