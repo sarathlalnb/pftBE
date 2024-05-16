@@ -34,7 +34,7 @@ class HrView(ViewSet):
 
     
     def list(self,request,*args,**kwargs):
-        qs=Hr.objects.all()
+        qs=Hr.objects.filter(is_adminapproved=False)
         serializer=HrSerializer(qs,many=True)
         return Response(data=serializer.data)
     
@@ -61,7 +61,7 @@ class TeamleadView(ViewSet):
 
     
     def list(self,request,*args,**kwargs):
-        qs=TeamLead.objects.all()
+        qs=TeamLead.objects.filter(is_adminapproved=False)
         serializer=TeamleadSerializer(qs,many=True)
         return Response(data=serializer.data)
     
@@ -89,7 +89,7 @@ class EmployeesView(ViewSet):
 
     
     def list(self,request,*args,**kwargs):
-        qs=Employee.objects.all()
+        qs=Employee.objects.filter(is_adminapproved=False)
         serializer=EmployeeSerializer(qs,many=True)
         return Response(data=serializer.data)
     
