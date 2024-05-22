@@ -84,12 +84,8 @@ class Project_assign(models.Model):
 
 class ProjectDetail(models.Model):
     teamlead=models.ForeignKey(TeamLead,on_delete=models.CASCADE)    
-    projectassigned=models.ForeignKey(Project_assign,on_delete=models.CASCADE) 
-    options=[
-        ("Frond end","Frond end"),
-        ("Back end","Back end"),
-    ]  
-    assigned_part=models.CharField(max_length=100,choices=options)
+    projectassigned=models.ForeignKey(Project_assign,on_delete=models.CASCADE)  
+    assigned_part=models.CharField(max_length=100)
     assigned_person=models.OneToOneField(Employee,on_delete=models.CASCADE)
     options=[
         ("In progress","In progress"),
