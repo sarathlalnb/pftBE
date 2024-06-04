@@ -15,6 +15,7 @@ router.register("taskchart",views.TaskChartView,basename="taskchart")
 router.register("Performance",views.PerformancelistView,basename="Performance")
 router.register("projectupdates",views.ProjectUpdatesView,basename="project-updates")
 router.register("meeting",views.MeetingView,basename="meeting")
+router.register("review",views.ReviewView,basename="review")
 
 
 

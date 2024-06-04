@@ -115,3 +115,11 @@ class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model=Rating
         fields="__all__" 
+
+
+class PerformanceTrackViewSerializer(serializers.ModelSerializer):
+    hr=serializers.CharField(read_only=True)
+    employee=serializers.CharField(source='employee.Firstname', read_only=True)
+    class Meta:
+        model=Performance_assign
+        fields="__all__"

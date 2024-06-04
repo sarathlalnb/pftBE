@@ -118,4 +118,10 @@ class MeetingListSerializer(serializers.ModelSerializer):
         fields="__all__"
         
         
+class ReviewSerializer(serializers.ModelSerializer):
+    teamlead=serializers.CharField(read_only=True)
+    emp=serializers.CharField(read_only=True)
 
+    class Meta:
+        model=Rating
+        fields="__all__"

@@ -378,6 +378,23 @@ class profileView(APIView):
 
     
      
+class PerformancelistView(ViewSet):
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
     
+    def list(self,request,*args,**kwargs):
+        qs=Performance_assign.objects.all()
+        serializer=PerformanceTrackViewSerializer(qs,many=True)
+        return Response(data=serializer.data)
+    
+    
+    def destroy(self, request, *args, **kwargs):
+        id = kwargs.get("pk")
+        try:
+            instance =Performance_assign.objects.get(id=id)
+            instance.delete()
+            return Response({"msg": "performance removed"})
+        except Employee.DoesNotExist:
+            return Response({"msg": "performance not found"}, status=status.HTTP_404_NOT_FOUND)
         
         

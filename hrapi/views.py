@@ -378,4 +378,20 @@ class profileView(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-          
+
+
+
+class ReviewView(ViewSet):
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+    
+    def list(self,request,*args,**kwargs):
+        qs=Rating.objects.all()
+        serializer=ReviewSerializer(qs,many=True)
+        return Response(data=serializer.data)
+    
+    def retrieve(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        qs=Rating.objects.get(id=id)
+        serializer=ReviewSerializer(qs)
+        return Response(data=serializer.data)
