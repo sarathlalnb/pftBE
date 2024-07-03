@@ -8,7 +8,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Employee
-        fields=["id","Firstname","lastname","email_address","phoneno","position","username","password"]
+        fields=["id","name","email_address","phoneno","home_address","job_title","department","linkedin_profile","manager_name","resume","username","password"]
 
     def create(self, validated_data):
         return Employee.objects.create_user(**validated_data)
@@ -17,7 +17,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class ProfileEditSerializer(serializers.ModelSerializer):
     class Meta:
         model=Employee
-        fields=["Firstname","lastname","email_address","phoneno","position"]
+        fields=["name","email_address","phoneno","home_address","job_title","department","linkedin_profile","manager_name","resume"]
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -32,7 +32,7 @@ class TeamSerializer(serializers.ModelSerializer):
     members=serializers.SerializerMethodField()
 
     def get_members(self, obj):
-        return [member.employee.Firstname for member in obj.members.all()]    
+        return [member.employee.name for member in obj.members.all()]    
 
     class Meta:
         model=Teams
@@ -51,7 +51,7 @@ class ProjectAssignSerializer(serializers.ModelSerializer):
 class ProjectDetailSerializer(serializers.ModelSerializer):
     projectassigned=serializers.CharField(source='projectassigned.topic', read_only=True)
     teamlead=serializers.CharField(source='teamlead.name', read_only=True)
-    assigned_person=serializers.CharField(source='assigned_person.Firstname', read_only=True)
+    assigned_person=serializers.CharField(source='assigned_person.name', read_only=True)
     class Meta:
         model=ProjectDetail
         fields="__all__"

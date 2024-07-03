@@ -374,27 +374,43 @@ class profileView(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-          
+        
+        
 
-    
-     
-class PerformancelistView(ViewSet):
+class AddPerformanceView(ViewSet):
     authentication_classes=[authentication.TokenAuthentication]
     permission_classes=[permissions.IsAuthenticated]
     
+    def create(self,request,*args,**kwargs):
+        serializer=PerformanceSerializer(data=request.data)
+        teamlead_id=request.user.id
+        teamlead_obj=TeamLead.objects.get(id=teamlead_id)
+        if serializer.is_valid():
+            serializer.save(teamlead=teamlead_obj)
+            return Response(data=serializer.data)
+        else:
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
     def list(self,request,*args,**kwargs):
         qs=Performance_assign.objects.all()
-        serializer=PerformanceTrackViewSerializer(qs,many=True)
+        serializer=PerformanceListSerializer(qs,many=True)
         return Response(data=serializer.data)
     
+    def retrieve(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        qs=Performance_assign.objects.get(id=id)
+        serializer=PerformanceListSerializer(qs)
+        return Response(data=serializer.data)
     
     def destroy(self, request, *args, **kwargs):
         id = kwargs.get("pk")
         try:
             instance =Performance_assign.objects.get(id=id)
             instance.delete()
-            return Response({"msg": "performance removed"})
+            return Response({"msg": "Performance_assign removed"})
         except Employee.DoesNotExist:
-            return Response({"msg": "performance not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"msg": "Performance_assign not found"}, status=status.HTTP_404_NOT_FOUND)
+      
+    
         
         

@@ -152,16 +152,25 @@ class ProjectDetailView(ViewSet):
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         
-    @action(methods=["post"],detail=True)
+    @action(methods=["post"], detail=True)
     def part_complete(self, request, *args, **kwargs):
-        projectdetail = kwargs.get("pk")
-        try:
-            projectdetail_obj = ProjectDetail.objects.get(id=projectdetail)
-        except Project_assign.DoesNotExist:
-            return Response({"message": "project not found"}, status=status.HTTP_404_NOT_FOUND)
-        projectdetail_obj.status = "completed"
-        projectdetail_obj.save()
-        return Response({"message": "project part completed marked success"}, status=status.HTTP_200_OK)
+        projectdetail_id = kwargs.get("pk")
+        file_data = request.data.get("file_data")
+        
+        if file_data:
+            try:
+                projectdetail_obj = ProjectDetail.objects.get(id=projectdetail_id)
+            except ProjectDetail.DoesNotExist:
+                return Response({"message": "project not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            projectdetail_obj.status = "completed"
+            projectdetail_obj.file = file_data
+            projectdetail_obj.save()
+            
+            return Response({"message": "project part completed marked success"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "file not submitted"}, status=status.HTTP_400_BAD_REQUEST)
+    
         
 
 class TaskChartView(ViewSet):

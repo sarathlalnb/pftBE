@@ -7,7 +7,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=TeamLead
-        fields=["id","name","username","email_address","password","phoneno"]
+        fields=["id","name","email_address","phoneno","home_address","job_title","position","department","prefferred_timezone","linkedin_profile","skills","certification","experience","username","password"]
 
     def create(self, validated_data):
         return TeamLead.objects.create_user(**validated_data)
@@ -16,7 +16,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class ProfileEditSerializer(serializers.ModelSerializer):
     class Meta:
         model=TeamLead
-        fields=["name","email_address","phoneno"]    
+        fields=["id","name","email_address","phoneno","home_address","job_title","position","department","prefferred_timezone","linkedin_profile","skills","certification","experience"]
 
         
 class ProjectSerializer(serializers.ModelSerializer):
@@ -43,7 +43,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
 class ProjectDetailViewSerializer(serializers.ModelSerializer):
     projectassigned=serializers.CharField(read_only=True)
     teamlead=serializers.CharField(read_only=True)
-    assigned_person=serializers.CharField(source='assigned_person.Firstname', read_only=True)
+    assigned_person=serializers.CharField(source='assigned_person.name', read_only=True)
     class Meta:
         model=ProjectDetail
         fields="__all__"
@@ -60,7 +60,7 @@ class TeamsViewSerializer(serializers.ModelSerializer):
     members=serializers.SerializerMethodField()
 
     def get_members(self, obj):
-        return [member.employee.Firstname for member in obj.members.all()]
+        return [member.employee.name for member in obj.members.all()]
     
     class Meta:
         model=Teams
@@ -70,12 +70,12 @@ class TeamsViewSerializer(serializers.ModelSerializer):
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model=Employee
-        fields=["id","Firstname","lastname","email_address","phoneno","position","user_type","in_team"]
+        fields=["id","name","email_address","phoneno","home_address","job_title","department","linkedin_profile","manager_name","resume","start_date","user_type","in_team"]
         
         
 class TaskChartSerializer(serializers.ModelSerializer):
     project_detail=ProjectDetailSerializer()
-    assigned_person=serializers.CharField(source='assigned_person.Firstname', read_only=True)
+    assigned_person=serializers.CharField(source='assigned_person.name', read_only=True)
     project_name=serializers.CharField(source='project_detail.projectassigned.project', read_only=True)  #new field for project name
     class Meta:
         model=TaskChart
@@ -116,10 +116,20 @@ class RatingSerializer(serializers.ModelSerializer):
         model=Rating
         fields="__all__" 
 
+        
+        
+class PerformanceSerializer(serializers.ModelSerializer):
+    teamlead=serializers.CharField(read_only=True)
 
-class PerformanceTrackViewSerializer(serializers.ModelSerializer):
-    hr=serializers.CharField(read_only=True)
-    employee=serializers.CharField(source='employee.Firstname', read_only=True)
+    class Meta:
+        model=Performance_assign
+        fields="__all__" 
+        
+        
+class PerformanceListSerializer(serializers.ModelSerializer):
+    teamlead=serializers.CharField(read_only=True)
+    employee=serializers.CharField(read_only=True)
+    
     class Meta:
         model=Performance_assign
         fields="__all__"

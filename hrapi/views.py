@@ -103,6 +103,20 @@ class TeamsView(ViewSet):
         qs=Teams.objects.get(id=id)
         serializer=TeamsSerializer(qs)
         return Response(data=serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+
+        try:
+            team_instance = Teams.objects.get(pk=pk)
+            for member in team_instance.members.all():
+                member.in_team = False
+                member.save()
+            team_instance.members.clear()
+            team_instance.delete()
+            return Response({"msg": "Team removed"})
+        except Teams.DoesNotExist:
+            return Response({"msg": "Team not found"}, status=status.HTTP_404_NOT_FOUND)
     
     
     @action(detail=True, methods=["post"])
@@ -252,50 +266,7 @@ class TaskChartView(ViewSet):
 #         serializer=TaskUpdatesChartSerializer(qs)
 #         return Response(data=serializer.data)
     
-    
-class PerformanceTrackView(APIView):
-    authentication_classes=[authentication.TokenAuthentication]
-    permission_classes=[permissions.IsAuthenticated]
-    
-    def post(self, request, *args, **kwargs):
-        serializer = PerformanceTrackSerializer(data=request.data)
-        hr_id = request.user.id
-        hr_obj = Hr.objects.get(id=hr_id)
-        employee_id = request.data.get('employee')  
-        employee = Employee.objects.get(id=employee_id)
-        
-        task_count = TaskUpdateChart.objects.filter(updated_by=employee).count()
-        
-        total_days_spent = TaskUpdateChart.objects.filter(updated_by=employee).aggregate(
-            total_days_spent=Sum('task__total_days')
-        )['total_days_spent'] or 0
-        
-        total_days_assigned = TaskChart.objects.filter(assigned_person=employee).aggregate(
-            total_days_assigned=Sum('total_days')
-        )['total_days_assigned'] or 0
-        
-        if total_days_assigned > 0:
-            tasks_percentage = min((task_count / total_days_assigned) * 100, 100)
-        else:
-            tasks_percentage = 0
-        
-        if total_days_assigned > 0:
-            days_percentage = min((total_days_spent / total_days_assigned) * 100, 100)  
-        else:
-            days_percentage = 0
-        
-        overall_performance = min((tasks_percentage + days_percentage) / 2, 100)
-        
-        if serializer.is_valid():
-            serializer.save(
-                hr=hr_obj,
-                employee=employee,
-                performance=overall_performance
-            )
-            return Response(data=serializer.data)
-        else:
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+       
         
 class PerformancelistView(ViewSet):
     authentication_classes=[authentication.TokenAuthentication]

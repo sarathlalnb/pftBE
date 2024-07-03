@@ -12,17 +12,36 @@ class CustomUser(AbstractUser):
     ]
     user_type=models.CharField(max_length=50,choices=user_type_choices,default="admin")
     
+    
 class Hr(CustomUser):
     name=models.CharField(max_length=200)
     email_address=models.CharField(max_length=100)
     phoneno=models.PositiveIntegerField()
-    is_adminapproved=models.BooleanField(default=False)
+    home_address=models.CharField(max_length=100,null=True)
+    job_title=models.CharField(max_length=100,null=True)
+    position=models.CharField(max_length=100,null=True)
+    department=models.CharField(max_length=100,null=True)
+    prefferred_timezone=models.CharField(max_length=100,null=True)
+    linkedin_profile=models.CharField(max_length=100,null=True)
+    skills=models.CharField(max_length=100,null=True)
+    certification=models.ImageField(upload_to="images",null=True)
+    experience=models.ImageField(upload_to="images",null=True)
+    is_adminapproved=models.BooleanField(default=False) 
   
 
 class TeamLead(CustomUser):
     name=models.CharField(max_length=200)
     email_address=models.CharField(max_length=100)
-    phoneno=models.PositiveIntegerField()  
+    phoneno=models.PositiveIntegerField()
+    home_address=models.CharField(max_length=100,null=True)
+    job_title=models.CharField(max_length=100,null=True)
+    position=models.CharField(max_length=100,null=True)
+    department=models.CharField(max_length=100,null=True)
+    prefferred_timezone=models.CharField(max_length=100,null=True)
+    linkedin_profile=models.CharField(max_length=100,null=True)
+    skills=models.CharField(max_length=100,null=True)
+    certification=models.ImageField(upload_to="images",null=True)
+    experience=models.ImageField(upload_to="images",null=True)  
     is_adminapproved=models.BooleanField(default=False)
     
     def __str__(self):
@@ -30,17 +49,22 @@ class TeamLead(CustomUser):
    
     
 class Employee(CustomUser):
-    Firstname=models.CharField(max_length=100)
-    lastname=models.CharField(max_length=200)
-    email_address=models.EmailField(unique=True)
+    name=models.CharField(max_length=200)
+    email_address=models.CharField(max_length=100)
     phoneno=models.PositiveIntegerField()
-    position=models.CharField(max_length=200)
+    home_address=models.CharField(max_length=100,null=True)
+    job_title=models.CharField(max_length=100,null=True)
+    department=models.CharField(max_length=100,null=True)
+    linkedin_profile=models.CharField(max_length=100,null=True)
+    manager_name=models.CharField(max_length=100,null=True)
+    resume=models.ImageField(upload_to="images",null=True)
+    start_date=models.DateField(auto_now_add=True,null=True)
     in_team=models.BooleanField(default=False)
     is_adminapproved=models.BooleanField(default=False)
 
 
     def __str__(self):
-        return self.Firstname
+        return self.name
     
 class Teams(models.Model):
     name=models.CharField(max_length=100)
@@ -92,6 +116,7 @@ class ProjectDetail(models.Model):
         ("completed","completed")
     ]
     status=models.CharField(max_length=50,choices=options,default="In progress")
+    file=models.FileField(upload_to="files",null=True)
     
     def __str__(self):
         return self.projectassigned.project.topic
@@ -110,7 +135,6 @@ class TaskUpdateChart(models.Model):
     name = models.CharField(max_length=100)
     updated_by=models.ForeignKey(Employee, on_delete=models.CASCADE)
     description=models.CharField(max_length=100)
-    performance_level=models.PositiveIntegerField(validators=[MinValueValidator(1),MaxValueValidator(3)])
     date_updated=models.DateTimeField(auto_now_add=True) 
     
     
