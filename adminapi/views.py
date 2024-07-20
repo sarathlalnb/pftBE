@@ -23,6 +23,7 @@ class CustomAuthToken(ObtainAuthToken):
         user_type = user.user_type
         
         return Response({
+            'id':user.id,
             'token': token.key,
             'user_type': user_type,
         })   

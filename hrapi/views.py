@@ -7,9 +7,11 @@ from rest_framework.viewsets import ModelViewSet,ViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from django.db.models import Count, Sum, F, ExpressionWrapper, FloatField
+from rest_framework.views import APIView
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+from django.db import IntegrityError
 
 
 from hrapi.models import Hr,Teams,TeamLead,TaskUpdateChart,TaskChart,Employee,Projects,ProjectDetail,Project_assign,Performance_assign,ProjectUpdates,Meeting
@@ -37,6 +39,7 @@ class CustomAuthToken(ObtainAuthToken):
             token, created = Token.objects.get_or_create(user=user)
             user_type = user.user_type
             return Response({
+                 'id':user.id,
                 'token': token.key,
                 'user_type': user_type,
             })
@@ -269,14 +272,26 @@ class TaskChartView(ViewSet):
        
         
 class PerformancelistView(ViewSet):
-    authentication_classes=[authentication.TokenAuthentication]
-    permission_classes=[permissions.IsAuthenticated]
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+
     
     def list(self,request,*args,**kwargs):
         qs=Performance_assign.objects.all()
         serializer=PerformanceTrackViewSerializer(qs,many=True)
         return Response(data=serializer.data)
     
+    def get(self,request,*args,**kwargs):
+        id = kwargs.get("pk")
+        print(id)
+     
+        emp=Employee.objects.get(id=id)
+        qs=Performance_assign.objects.get(employee=emp)
+        serializer=PerformanceTrackViewSerializer(qs)
+        return Response(data=serializer.data)
+    
+   
     
     def destroy(self, request, *args, **kwargs):
         id = kwargs.get("pk")
@@ -366,3 +381,29 @@ class ReviewView(ViewSet):
         qs=Rating.objects.get(id=id)
         serializer=ReviewSerializer(qs)
         return Response(data=serializer.data)
+
+
+class PerfomanceCreateView(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk, *args, **kwargs):
+        try:
+            user_obj = Employee.objects.get(id=pk)
+            team_lead = TeamLead.objects.get(id=request.user.id)
+        except Employee.DoesNotExist:
+            return Response({"status": 0, "error": "employee not found"}, status=status.HTTP_404_NOT_FOUND)
+       
+        serializer = PerformanceTrackSerializer2(data=request.data)
+        if serializer.is_valid():
+            try:
+                serializer.save(teamlead=team_lead, employee=user_obj)
+                response_data = {
+                    "status": 1,
+                    "data": serializer.data
+                }
+                return Response(response_data, status=status.HTTP_201_CREATED)
+            except IntegrityError:
+                return Response({"status": 0, "error": "performance entry for this employee already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -6,7 +6,7 @@ from hrapi.models import *
 class HrSerializer(serializers.ModelSerializer):
     class Meta:
         model=Hr
-        fields=["name","email_address","phoneno","home_address","job_title","position","department","prefferred_timezone","linkedin_profile","skills","certification","experience"]
+        fields=["id","name","email_address","phoneno","home_address","job_title","position","department","prefferred_timezone","linkedin_profile","skills","certification","experience","is_adminapproved"]
         
 
 class TeamleadSerializer(serializers.ModelSerializer):

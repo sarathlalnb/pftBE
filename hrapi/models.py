@@ -116,7 +116,6 @@ class ProjectDetail(models.Model):
         ("completed","completed")
     ]
     status=models.CharField(max_length=50,choices=options,default="In progress")
-    file=models.FileField(upload_to="files",null=True)
     
     def __str__(self):
         return self.projectassigned.project.topic
@@ -128,6 +127,9 @@ class TaskChart(models.Model):
     start_date = models.DateField(auto_now_add=True)
     end_date = models.DateField()
     total_days=models.IntegerField()
+    def __str__(self):
+        return self.project_detail.projectassigned.project.topic
+     
     
     
 class TaskUpdateChart(models.Model):
@@ -136,10 +138,13 @@ class TaskUpdateChart(models.Model):
     updated_by=models.ForeignKey(Employee, on_delete=models.CASCADE)
     description=models.CharField(max_length=100)
     date_updated=models.DateTimeField(auto_now_add=True) 
+    def __str__(self):
+
+        return self.name
     
     
 class Performance_assign(models.Model):
-    hr=models.ForeignKey(Hr,on_delete=models.CASCADE)
+    teamlead=models.ForeignKey(TeamLead,on_delete=models.CASCADE,null=True)
     employee=models.OneToOneField(Employee,on_delete=models.CASCADE,unique=True)
     performance=models.FloatField()
 
@@ -158,6 +163,7 @@ class DailyTask(models.Model):
     teamlead=models.ForeignKey(TeamLead,on_delete=models.CASCADE)    
     task=models.CharField(max_length=100)
     emp=models.ForeignKey(Employee, on_delete=models.CASCADE)
+    file=models.FileField(upload_to="files",null=True)
     is_completed=models.BooleanField(default=False)
     
 class Rating(models.Model):

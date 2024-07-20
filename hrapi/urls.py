@@ -26,5 +26,6 @@ urlpatterns = [
     path("register/",views.HrCreateView.as_view(),name="signup"),
     path('token/',views.CustomAuthToken.as_view(), name='token'),
     path("profile/",views.profileView.as_view(),name="profile"),
+    path('perfomance/create/<int:pk>/',views.PerfomanceCreateView.as_view(),name='pc')
 
 ] +router.urls

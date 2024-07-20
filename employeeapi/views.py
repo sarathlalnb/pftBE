@@ -40,6 +40,7 @@ class CustomAuthToken(ObtainAuthToken):
             token, created = Token.objects.get_or_create(user=user)
             user_type = user.user_type
             return Response({
+                'id':user.id,
                 'token': token.key,
                 'user_type': user_type,
             })
@@ -154,22 +155,15 @@ class ProjectDetailView(ViewSet):
         
     @action(methods=["post"], detail=True)
     def part_complete(self, request, *args, **kwargs):
-        projectdetail_id = kwargs.get("pk")
-        file_data = request.data.get("file_data")
+        projectdetail_id = kwargs.get("pk")        
+        try:
+            projectdetail_obj = ProjectDetail.objects.get(id=projectdetail_id)
+        except ProjectDetail.DoesNotExist:
+            return Response({"message": "project not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        if file_data:
-            try:
-                projectdetail_obj = ProjectDetail.objects.get(id=projectdetail_id)
-            except ProjectDetail.DoesNotExist:
-                return Response({"message": "project not found"}, status=status.HTTP_404_NOT_FOUND)
-            
-            projectdetail_obj.status = "completed"
-            projectdetail_obj.file = file_data
-            projectdetail_obj.save()
-            
-            return Response({"message": "project part completed marked success"}, status=status.HTTP_200_OK)
-        else:
-            return Response({"message": "file not submitted"}, status=status.HTTP_400_BAD_REQUEST)
+        projectdetail_obj.status = "completed"
+        projectdetail_obj.save()
+        return Response({"message": "project part completed marked success"}, status=status.HTTP_200_OK)
     
         
 
@@ -329,8 +323,15 @@ class DailyTaskView(ViewSet):
     @action(detail=True, methods=["post"])
     def mark_completed(self, request, *args, **kwargs):
         id = kwargs.get("pk")
+        print(id)
         qs=DailyTask.objects.get(id=id)
-        qs.is_completed= True
-        qs.save()
-        serializer = DailyTaskSerializer(qs)
-        return Response(serializer.data)     
+        file_data = request.data.get("file_data")
+        print(file_data)
+        if file_data:
+            qs.is_completed= True
+            qs.file = file_data
+            qs.save()        
+            return Response({"message": "daily task completed marked success"}, status=status.HTTP_200_OK) 
+        else:
+            return Response({"message": "file not submitted"}, status=status.HTTP_400_BAD_REQUEST)    
+    
