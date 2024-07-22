@@ -155,13 +155,15 @@ class ProjectDetailView(ViewSet):
         
     @action(methods=["post"], detail=True)
     def part_complete(self, request, *args, **kwargs):
-        projectdetail_id = kwargs.get("pk")        
+        projectdetail_id = kwargs.get("pk") 
+        project_link = request.data.get("project_link")       
         try:
             projectdetail_obj = ProjectDetail.objects.get(id=projectdetail_id)
         except ProjectDetail.DoesNotExist:
             return Response({"message": "project not found"}, status=status.HTTP_404_NOT_FOUND)
         
         projectdetail_obj.status = "completed"
+        projectdetail_obj.project_link=project_link
         projectdetail_obj.save()
         return Response({"message": "project part completed marked success"}, status=status.HTTP_200_OK)
     

@@ -250,11 +250,13 @@ class AssignedProjectView(ViewSet):
     @action(methods=["post"],detail=True)
     def project_completed(self, request, *args, **kwargs):
         assignedproject_id = kwargs.get("pk")
+        link=request.data.get('link')
         try:
             assignproject_obj = Project_assign.objects.get(id=assignedproject_id)
         except Project_assign.DoesNotExist:
             return Response({"message": "project not found"}, status=status.HTTP_404_NOT_FOUND)
         assignproject_obj.project.project_status = "completed"
+        assignproject_obj.project.link = link
         assignproject_obj.project.save()
         return Response({"message": "project completed marked success"}, status=status.HTTP_200_OK)
         

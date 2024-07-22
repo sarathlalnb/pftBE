@@ -86,6 +86,7 @@ class Projects(models.Model):
         ("completed","completed")
     ]
     project_status=models.CharField(max_length=50,choices=options,default="pending")
+    link=models.CharField(max_length=100,null=True)
     
     def __str__(self):
         return self.topic
@@ -100,6 +101,7 @@ class Project_assign(models.Model):
     project=models.OneToOneField(Projects,on_delete=models.CASCADE,unique=True)
     teamlead=models.ForeignKey(TeamLead,on_delete=models.CASCADE)
     team=models.ForeignKey(Teams,on_delete=models.CASCADE)
+    
     
     def __str__(self):
         return self.project.topic 
@@ -116,6 +118,7 @@ class ProjectDetail(models.Model):
         ("completed","completed")
     ]
     status=models.CharField(max_length=50,choices=options,default="In progress")
+    project_link=models.CharField(max_length=100,null=True)
     
     def __str__(self):
         return self.projectassigned.project.topic
@@ -165,6 +168,7 @@ class DailyTask(models.Model):
     emp=models.ForeignKey(Employee, on_delete=models.CASCADE)
     file=models.FileField(upload_to="files",null=True)
     is_completed=models.BooleanField(default=False)
+    due_date=models.DateField(null=True)
     
 class Rating(models.Model):
     teamlead=models.ForeignKey(TeamLead,on_delete=models.CASCADE)    
