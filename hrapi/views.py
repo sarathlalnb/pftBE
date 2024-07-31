@@ -144,8 +144,9 @@ class ProjectView(ViewSet):
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-    def put(self,request,*args,**kwargs):
-        serializer=ProjectSerializer(data=request.data)
+    def put(self,request,*args,pk,**kwargs):
+        projects =Projects.objects.get(id=pk)
+        serializer=ProjectSerializer(instance=projects,data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(data=serializer.data)
