@@ -387,7 +387,7 @@ class PerfomanceCreateView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, pk, *args, **kwargs):
+    def patch(self, request, pk, *args, **kwargs):
         try:
             user_obj = Employee.objects.get(id=pk)
             team_lead = TeamLead.objects.get(id=request.user.id)
@@ -407,3 +407,22 @@ class PerfomanceCreateView(APIView):
                 return Response({"status": 0, "error": "performance entry for this employee already exists"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            user_obj = Employee.objects.get(id=pk)
+            team_lead = TeamLead.objects.get(id=request.user.id)
+        except Employee.DoesNotExist:
+            return Response({"status": 0, "error": "employee not found"}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            perf=request.data.get('performance')
+            print(perf)
+            p=Performance_assign.objects.get(employee=user_obj)
+            p.performance=perf
+            p.save()
+            response_data = {
+                "status": 1,
+                "data": perf
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
+        except IntegrityError:
+            return Response({"status": 0, "error": "Some error occured!!!!"}, status=status.HTTP_400_BAD_REQUEST)
