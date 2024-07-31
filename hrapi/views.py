@@ -143,6 +143,14 @@ class ProjectView(ViewSet):
             return Response(data=serializer.data)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def put(self,request,*args,**kwargs):
+        serializer=ProjectSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data)
+        else:
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def list(self,request,*args,**kwargs):
         qs=Projects.objects.all()
@@ -433,8 +441,6 @@ class PerfomanceCreateView(APIView):
         except Employee.DoesNotExist:
             return Response({"status": 0, "error": "employee not found"}, status=status.HTTP_404_NOT_FOUND)
         try:
-            perf=request.data.get('performance')
-            print(perf)
             p=Performance_assign.objects.get(employee=user_obj)
            
             response_data = {
