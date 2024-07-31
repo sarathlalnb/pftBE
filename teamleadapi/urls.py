@@ -26,6 +26,7 @@ urlpatterns = [
     path("register/",views.TeamleadCreateView.as_view(),name="signup"),
     path('token/',views.CustomAuthToken.as_view(), name='token'),
     path("profile/",views.profileView.as_view(),name="profile"),
+    path("allemployee/",views.EmployeesAllView.as_view(),name="allemp"),
 
 
 ]  +router.urls

@@ -67,6 +67,35 @@ class TeamsViewSerializer(serializers.ModelSerializer):
         fields="__all__"
         
         
+class EmployeeSerializer1(serializers.ModelSerializer):
+    team_names= serializers.SerializerMethodField()
+    team_lead = serializers.SerializerMethodField()
+    project_details = serializers.SerializerMethodField()
+    class Meta:
+        model=Employee
+        fields=["id","name","team_names","team_lead","project_details","email_address","phoneno","home_address","job_title","department","linkedin_profile","manager_name","resume","start_date","user_type","in_team"]
+        
+    def get_team_names(self, obj):
+        # Get all the teams where the employee is a member
+        teams = Teams.objects.filter(members=obj)
+        # Return a list of team names
+        return [team.name for team in teams]    
+    def get_team_lead(self, obj):
+        # Get all the teams where the employee is a member
+        teams = Teams.objects.filter(members=obj)
+        # Return a list of team names
+        return [team.teamlead.name for team in teams]
+    def get_project_details(self, obj):
+        project_detail = ProjectDetail.objects.filter(assigned_person=obj).first()
+        if project_detail:
+            return {
+                "project_name": project_detail.projectassigned.project.topic,
+                "assigned_part": project_detail.assigned_part,
+                "status": project_detail.status
+            }
+        return None    
+        
+        
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model=Employee

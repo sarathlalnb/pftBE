@@ -417,3 +417,13 @@ class AddPerformanceView(ViewSet):
     
         
         
+class EmployeesAllView(APIView):
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+
+    
+    def get(self,request,*args,**kwargs):
+        qs=Employee.objects.all()
+
+        serializer=EmployeeSerializer1(qs,many=True)
+        return Response(data=serializer.data)
