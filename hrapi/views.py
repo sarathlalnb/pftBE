@@ -391,10 +391,14 @@ class ReviewView(ViewSet):
         serializer=ReviewSerializer(qs)
         return Response(data=serializer.data)
 
+from rest_framework.authentication import SessionAuthentication
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
+@method_decorator(csrf_exempt, name='dispatch')
 class PerfomanceCreateView(APIView):
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [authentication.TokenAuthentication, authentication.SessionAuthentication]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, pk, *args, **kwargs):
         try:
@@ -412,42 +416,47 @@ class PerfomanceCreateView(APIView):
                     "data": serializer.data
                 }
                 return Response(response_data, status=status.HTTP_201_CREATED)
-            except IntegrityError:
+            except :
                 return Response({"status": 0, "error": "performance entry for this employee already exists"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def patch(self, request, pk, *args, **kwargs):
         try:
             user_obj = Employee.objects.get(id=pk)
             team_lead = TeamLead.objects.get(id=request.user.id)
         except Employee.DoesNotExist:
             return Response({"status": 0, "error": "employee not found"}, status=status.HTTP_404_NOT_FOUND)
+        
         try:
-            perf=request.data.get('performance')
-            print(perf)
-            p=Performance_assign.objects.get(employee=user_obj)
-            p.performance=perf
-            p.save()
-            response_data = {
-                "status": 1,
-                "data": perf
-            }
-            return Response(response_data, status=status.HTTP_201_CREATED)
+            perf = request.data.get('performance')
+            try:
+                p = Performance_assign.objects.get(employee=user_obj)
+                p.performance = perf
+                p.save()
+                response_data = {
+                    "status": 1,
+                    "data": perf
+                }
+                return Response(response_data, status=status.HTTP_200_OK)
+            except Performance_assign.DoesNotExist:
+                return Response({"status": 0, "error": "Performance Not Added!"}, status=status.HTTP_404_NOT_FOUND)
         except IntegrityError:
-            return Response({"status": 0, "error": "Some error occured!!!!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"status": 0, "error": "Some error occurred!"}, status=status.HTTP_400_BAD_REQUEST)
+
     def get(self, request, pk, *args, **kwargs):
         try:
             user_obj = Employee.objects.get(id=pk)
             team_lead = TeamLead.objects.get(id=request.user.id)
         except Employee.DoesNotExist:
             return Response({"status": 0, "error": "employee not found"}, status=status.HTTP_404_NOT_FOUND)
+        
         try:
-            p=Performance_assign.objects.get(employee=user_obj)
-           
+            p = Performance_assign.objects.get(employee=user_obj)
             response_data = {
                 "status": 1,
                 "data": p.performance
             }
-            return Response(response_data, status=status.HTTP_201_CREATED)
-        except IntegrityError:
-            return Response({"status": 0, "error": "Some error occured!!!!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(response_data, status=status.HTTP_200_OK)
+        except Performance_assign.DoesNotExist:
+            return Response({"status": 0, "error": "Performance Not Added!"}, status=status.HTTP_404_NOT_FOUND)
